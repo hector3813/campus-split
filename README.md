@@ -1,57 +1,44 @@
-# Sample Hardhat 3 Beta Project (`node:test` and `viem`)
+# Campus Split 🎓 (USDC on Base)
 
-This project showcases a Hardhat 3 Beta project using the native Node.js test runner (`node:test`) and the `viem` library for Ethereum interactions.
+**Live Contract:** [`0xBC9B9b9c0BdBdE267352fFF668a69c25b738c163`](https://sepolia.basescan.org/address/0xBC9B9b9c0BdBdE267352fFF668a69c25b738c163)
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## 💡 Inspiration
+As university students, splitting bills is a daily struggle. "Who paid for the pizza?" "What about the electric bill?" Traditional apps like Venmo or Splitwise have friction: settlement delays, bank withdrawal limits, and they are often inaccessible to international students who don't have local bank accounts.
 
-## Project Overview
+We wanted to build something **instant, borderless, and trustless**. By using **USDC** on **Base**, we realized we could make splitting a $5 lunch just as cheap and fast as sending a text message, without any bank acting as a middleman.
 
-This example project includes:
+## 🚀 What it does
+**Campus Split** is a decentralized expense settlement tool.
+1.  **Create a Bill:** A user initiates a shared expense (e.g., "Friday Pizza Night") on-chain.
+2.  **Approve:** Participants approve the smart contract to spend their USDC.
+3.  **Settle:** With a single command, the contract pulls USDC from the payer and **instantly** pushes it to the creator's wallet.
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using [`node:test`](nodejs.org/api/test.html), the new Node.js native test runner, and [`viem`](https://viem.sh/).
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
+There is no "balance to withdraw." The money moves wallet-to-wallet in one atomic transaction.
 
-## Usage
+## ⚙️ How we built it
+We utilized a robust EVM stack optimized for the **Base L2** ecosystem:
 
-### Running Tests
+* **Smart Contract:** Written in **Solidity** ($v0.8.24$). We implemented the `IERC20` interface to interact directly with Circle's official USDC contract on Base Sepolia.
+* **Network:** Deployed on **Base Sepolia Testnet**. We chose Base for its EVM equivalence and negligible gas fees, which are critical for micro-transactions ($< \$0.01$ fee).
+* **Dev Environment:** **Hardhat** for compilation, testing, and deployment scripts.
+* **Interaction:** We built a custom Node.js CLI (Command Line Interface) using **Ethers.js** to demonstrate the flow live without needing a heavy frontend.
 
-To run all the tests in the project, execute the following command:
+## 🚧 Challenges we ran into
+The biggest challenge was **Dependency Hell**.
+We initially faced severe conflicts between Node.js v22, Hardhat v2, and the newer Hardhat v3 Toolbox. The environment kept crashing with `ERR_MODULE_NOT_FOUND` and TypeScript mismatches.
+* *Solution:* We stripped the project down to a pure JavaScript + CommonJS architecture, manually managing the `hardhat-ethers` plugins to ensure stability. It was a lesson in "keeping it simple" to ship on a deadline.
 
-```shell
-npx hardhat test
-```
+## 🏅 Accomplishments that we're proud of
+* **Live Deployment:** We successfully deployed to the Base Sepolia testnet despite environment crashes.
+* **Circle Integration:** Successfully interacting with the USDC contract (approvals and transfers) rather than just sending native ETH.
+* **Atomic Settlement:** Writing logic that ensures the bill is marked "Settled" exactly when the funds move, preventing double-payments.
 
-You can also selectively run the Solidity or `node:test` tests:
+## 🧠 What we learned
+* **EVM Tooling:** We gained a deep understanding of Hardhat configuration and debugging provider errors.
+* **Base Architecture:** We learned how to bridge assets from Sepolia L1 to Base L2 to fund our deployment.
+* **Async/Await patterns:** Managing blockchain state changes and waiting for block confirmations in our scripts.
 
-```shell
-npx hardhat test solidity
-npx hardhat test nodejs
-```
-
-### Make a deployment to Sepolia
-
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
-
-To run the deployment to a local chain:
-
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
-
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+## 🔮 What's next for Campus Split
+* **Frontend:** Building a React/Next.js mobile-first UI for easy use in dining halls.
+* **Group Splits:** Upgrading the contract to handle $N$-way splits (e.g., 4 roommates splitting rent).
+* **Base Identity:** Integrating "Basenames" so users can pay `@alice` instead of `0x123...`.
